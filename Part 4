@@ -1,0 +1,163 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Apr  2 23:54:13 2020
+
+@author: Joshuabalbi
+"""
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from random import random
+import statistics as stat
+
+daf=pd.read_csv("/Users/Joshuabalbi/Downloads/project-2-JoshuaBalbi-master/ckd.csv")
+#Blood Glucose Random Hemoglobin Class 
+
+x=daf['Blood Glucose Random'].values.tolist()
+
+y=daf['Hemoglobin'].values.tolist()
+
+p=daf['Class'].values.tolist()
+
+def scale_x():
+    x_scaled=[]
+    for i in range(0,158):
+        w= ((x[i]-70)/(490-70))
+        x_scaled.append(w)
+    return x_scaled
+
+def scale_y():
+    y_scaled=[]
+    for i in range(0,158):
+        w= ((y[i]-3.1)/(17.8-3.1))
+        y_scaled.append(w)
+    return y_scaled
+
+def select(K):
+    rndm=[]
+    for i in range(0,2*K):
+        r = random()
+        rndm.append(r)
+    return rndm
+
+v=select(3)
+
+def assign(k,v):
+    for i in range(0,2*k,2):
+        if i==0:
+            t=[]
+            for j in range(0,158):
+                z=np.sqrt((v[i]-scale_x()[j])**2+(v[i+1]-scale_y()[j])**2)
+                t.append(z) 
+        elif i==2:
+            s=[]
+            for j in range(0,158):
+                z=np.sqrt((v[i]-scale_x()[j])**2+(v[i+1]-scale_y()[j])**2)
+                s.append(z) 
+        else:
+            q=[]
+            for j in range(0,158):
+                z=np.sqrt((v[i]-scale_x()[j])**2+(v[i+1]-scale_y()[j])**2)
+                q.append(z)
+    colorlist=[]
+    if k==1:
+        a=np.array(t)
+        e=a
+    elif k==2:
+        a=np.array(t)
+        b=np.array(s)
+        d=np.concatenate((a,b),axis=0)
+        e=d.reshape(158,k)
+    else:
+        a=np.array(t)
+        b=np.array(s)
+        c=np.array(q)
+        d=np.concatenate((a,b,c),axis=0)
+        e=d.reshape(158,k)
+    for i in range(0,158):
+        c=np.argmin(e[i])  
+        colorlist.append(c)
+    return colorlist
+
+#print(assign(3,v))
+
+def update(k,v):
+    rx=[]
+    ry=[]
+    bx=[]
+    by=[]
+    yx=[]
+    yy=[]
+    update=[]
+    for i in range(0,158):
+        if v[i]==0:
+            rx.append(scale_x()[i])
+            ry.append(scale_y()[i])
+        elif v[i]==1:
+            bx.append(scale_x()[i])
+            by.append(scale_y()[i])
+        else:
+            yx.append(scale_x()[i])
+            yy.append(scale_y()[i]) 
+    if k==1:        
+        r1=stat.mean(rx)
+        r2=stat.mean(ry)
+        update.append(r1)
+        update.append(r2)
+    elif k==2:
+        r1=stat.mean(rx)
+        r2=stat.mean(ry)
+        b1=stat.mean(bx)        
+        b2=stat.mean(by) 
+        update.append(r1)
+        update.append(r2)
+        update.append(b1)
+        update.append(b2)
+    else:
+        r1=stat.mean(rx)
+        r2=stat.mean(ry)
+        b1=stat.mean(bx)        
+        b2=stat.mean(by) 
+        y1=stat.mean(yx)
+        y2=stat.mean(yy)
+        update.append(r1)
+        update.append(r2)
+        update.append(b1)
+        update.append(b2)
+        update.append(y1)
+        update.append(y2)
+    return update
+
+
+
+def iterate(k,m):
+    v=select(k)
+    for i in range(0,m):
+        a=assign(k,v)
+        b=update(k,a)
+        v=b
+    return a,v
+
+def make_color(k,m):
+    I,v=iterate(k,m)
+    colorlist=[]
+    for i in range(0,158):
+        if I[i]==0:
+            r='red'
+            colorlist.append(r)
+        elif I[i]==1:
+            b="blue"
+            colorlist.append(b)
+        else:
+            y="yellow"
+            colorlist.append(y)
+    return colorlist,v
+
+colorlist,v=make_color(2,1)       
+plt.scatter(scale_x() , scale_y() , s=1, color=colorlist)
+plt.scatter(v[0],v[1])
+plt.xlabel('Blood Glucose Random')
+plt.ylabel('Hemoglobin')
+plt.title('Chronic Kidney Disease chart', fontdict=None, loc='center')
+plt.show ()
