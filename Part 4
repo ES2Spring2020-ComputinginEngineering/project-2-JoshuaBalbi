@@ -41,8 +41,6 @@ def select(K):
         rndm.append(r)
     return rndm
 
-v=select(3)
-
 def assign(k,v):
     for i in range(0,2*k,2):
         if i==0:
@@ -67,20 +65,37 @@ def assign(k,v):
     elif k==2:
         a=np.array(t)
         b=np.array(s)
-        d=np.concatenate((a,b),axis=0)
-        e=d.reshape(158,k)
+        d=b-a
+        for i in range(0,158):
+            if d[i]>0:
+                r="red"
+                colorlist.append(r)
+            else:
+                b="blue"
+                colorlist.append(b)
     else:
         a=np.array(t)
         b=np.array(s)
         c=np.array(q)
-        d=np.concatenate((a,b,c),axis=0)
-        e=d.reshape(158,k)
-    for i in range(0,158):
-        c=np.argmin(e[i])  
-        colorlist.append(c)
+        d=b-a
+        e=c-a
+        f=c-b
+        for i in range(0,158):
+            if d[i]>0:
+                if e[i]>0:
+                    r="red"
+                    colorlist.append(r)  
+                else:
+                    y="green"
+                    colorlist.append(y)
+            else:
+                if f[i]>0:
+                    b="blue"
+                    colorlist.append(b)
+                else:
+                    y="green"
+                    colorlist.append(y)
     return colorlist
-
-#print(assign(3,v))
 
 def update(k,v):
     rx=[]
@@ -91,10 +106,10 @@ def update(k,v):
     yy=[]
     update=[]
     for i in range(0,158):
-        if v[i]==0:
+        if v[i]=="red":
             rx.append(scale_x()[i])
             ry.append(scale_y()[i])
-        elif v[i]==1:
+        elif v[i]=="blue":
             bx.append(scale_x()[i])
             by.append(scale_y()[i])
         else:
@@ -129,34 +144,15 @@ def update(k,v):
         update.append(y2)
     return update
 
-
-
 def iterate(k,m):
     v=select(k)
     for i in range(0,m):
         a=assign(k,v)
         b=update(k,a)
         v=b
-    return a,v
-
-def make_color(k,m):
-    I,v=iterate(k,m)
-    colorlist=[]
-    for i in range(0,158):
-        if I[i]==0:
-            r='red'
-            colorlist.append(r)
-        elif I[i]==1:
-            b="blue"
-            colorlist.append(b)
-        else:
-            y="yellow"
-            colorlist.append(y)
-    return colorlist,v
-
-colorlist,v=make_color(2,1)       
-plt.scatter(scale_x() , scale_y() , s=1, color=colorlist)
-plt.scatter(v[0],v[1])
+    return a
+   
+plt.scatter(scale_x() , scale_y() , s=1, color=iterate(3,10))
 plt.xlabel('Blood Glucose Random')
 plt.ylabel('Hemoglobin')
 plt.title('Chronic Kidney Disease chart', fontdict=None, loc='center')
