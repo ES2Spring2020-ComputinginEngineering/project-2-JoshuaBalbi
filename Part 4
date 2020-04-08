@@ -5,155 +5,153 @@ Created on Thu Apr  2 23:54:13 2020
 
 @author: Joshuabalbi
 """
+#import statements
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 from random import random
 import statistics as stat
+#----------------------------
+#Function definitions
 
-daf=pd.read_csv("/Users/Joshuabalbi/Downloads/project-2-JoshuaBalbi-master/ckd.csv")
-#Blood Glucose Random Hemoglobin Class 
-
-x=daf['Blood Glucose Random'].values.tolist()
-
-y=daf['Hemoglobin'].values.tolist()
-
-p=daf['Class'].values.tolist()
-
-def scale_x():
-    x_scaled=[]
+#scale(l) scales any list to a 0-1 scale with parameters a specific 
+#list with 158 elements. the list is used for many other functions ahead
+def scale(l):
+    l_scaled=[]
+    mi=min(l)
+    ma=max(l)
     for i in range(0,158):
-        w= ((x[i]-70)/(490-70))
-        x_scaled.append(w)
-    return x_scaled
+        w= ((l[i]-mi)/(ma-mi))
+        l_scaled.append(w)
+    return l_scaled
 
-def scale_y():
-    y_scaled=[]
-    for i in range(0,158):
-        w= ((y[i]-3.1)/(17.8-3.1))
-        y_scaled.append(w)
-    return y_scaled
-
-def select(K):
+#select(k) function randomly selects values from 0-1 using a parameter k as in
+#how many clusters are desired and it prints 2*k ammount of random points to 
+#have an x and y value for the centroid
+def select(k):
     rndm=[]
-    for i in range(0,2*K):
+    for i in range(0,2*k):
         r = random()
         rndm.append(r)
     return rndm
 
-def assign(k,v):
-    for i in range(0,2*k,2):
-        if i==0:
-            t=[]
-            for j in range(0,158):
-                z=np.sqrt((v[i]-scale_x()[j])**2+(v[i+1]-scale_y()[j])**2)
-                t.append(z) 
-        elif i==2:
-            s=[]
-            for j in range(0,158):
-                z=np.sqrt((v[i]-scale_x()[j])**2+(v[i+1]-scale_y()[j])**2)
-                s.append(z) 
-        else:
-            q=[]
-            for j in range(0,158):
-                z=np.sqrt((v[i]-scale_x()[j])**2+(v[i+1]-scale_y()[j])**2)
-                q.append(z)
+#assign takes on 4 variables, k= how many clusters desired, v=a list of 
+#integers 0-1 depending on the k using select(k) and x and y are lists
+#the function makes a list of k empty lists and then appends to them if 
+#the index of the list matches the index of the closest centroid to a point    
+#afterwards it loops through the k ammount of lists made and attains the smallest
+#distance and corresponding index which then is used to determine the color
+def assign(k,v,x,y):
+    l=[]
     colorlist=[]
-    if k==1:
-        a=np.array(t)
-        e=a
-    elif k==2:
-        a=np.array(t)
-        b=np.array(s)
-        d=b-a
-        for i in range(0,158):
-            if d[i]>0:
-                r="red"
-                colorlist.append(r)
-            else:
-                b="blue"
-                colorlist.append(b)
-    else:
-        a=np.array(t)
-        b=np.array(s)
-        c=np.array(q)
-        d=b-a
-        e=c-a
-        f=c-b
-        for i in range(0,158):
-            if d[i]>0:
-                if e[i]>0:
-                    r="red"
-                    colorlist.append(r)  
-                else:
-                    y="green"
-                    colorlist.append(y)
-            else:
-                if f[i]>0:
-                    b="blue"
-                    colorlist.append(b)
-                else:
-                    y="green"
-                    colorlist.append(y)
-    return colorlist
-
-def update(k,v):
-    rx=[]
-    ry=[]
-    bx=[]
-    by=[]
-    yx=[]
-    yy=[]
-    update=[]
+    indexlist=[]
+    for i in range(0,k):
+        l.append([])
+    for i in range(0,2*k,2):
+        for j in range(0,158):
+            z=np.sqrt((v[i]-scale(x)[j])**2+(v[i+1]-scale(y)[j])**2)
+            l[(i//2)].append(z) 
     for i in range(0,158):
-        if v[i]=="red":
-            rx.append(scale_x()[i])
-            ry.append(scale_y()[i])
-        elif v[i]=="blue":
-            bx.append(scale_x()[i])
-            by.append(scale_y()[i])
-        else:
-            yx.append(scale_x()[i])
-            yy.append(scale_y()[i]) 
-    if k==1:        
-        r1=stat.mean(rx)
-        r2=stat.mean(ry)
-        update.append(r1)
-        update.append(r2)
-    elif k==2:
-        r1=stat.mean(rx)
-        r2=stat.mean(ry)
-        b1=stat.mean(bx)        
-        b2=stat.mean(by) 
-        update.append(r1)
-        update.append(r2)
-        update.append(b1)
-        update.append(b2)
-    else:
-        r1=stat.mean(rx)
-        r2=stat.mean(ry)
-        b1=stat.mean(bx)        
-        b2=stat.mean(by) 
-        y1=stat.mean(yx)
-        y2=stat.mean(yy)
-        update.append(r1)
-        update.append(r2)
-        update.append(b1)
-        update.append(b2)
-        update.append(y1)
-        update.append(y2)
+        nl=[]
+        for j in range(0,k):
+            if j==(k-1):
+                n=l[j][i]
+                nl.append(n)
+                c=nl.index(min(nl))
+                indexlist.append(c)
+            else:
+                n=l[j][i]
+                nl.append(n)
+    colors=["red","blue","green","orange","yellow","pink","purple","black","brown","silver"]
+    colorlist=[]
+    for i in range(0,158):
+        cl=colors[indexlist[i]]
+        colorlist.append(cl)
+    return indexlist, colorlist
+
+#update takes 4 parameters ammountof clusters=k v= the select(k) points x and
+#y are the lists. what this function does is it takes v which would be the index
+#list aquired from assign and would then append the corresponding points that
+#are closets to it into a list that would be sumed up and divided by lenght to
+#attain the mean or the new centroid and this would be done k amount of time
+def update(k,v,x,y):
+    cm=[]
+    update=[]
+    for i in range(0,2*k):
+        cm.append([])
+    for i in range(0,2*k,2):
+        for j in range(0,158):
+            if v[j]==(i//2):
+                cm[i].append(scale(x)[j])
+                cm[i+1].append(scale(y)[j])
+    for i in range(0,2*k):
+        pt=stat.mean(cm[i])
+        update.append(pt)
     return update
 
-def iterate(k,m):
+#iterate takes 4 parameters k= ammount of clusters, m ammount of  times iterated
+#x and y are the lists that need to be scaled. this basically just loops through m 
+#ammount of times to get the desired centroids=v color=c and index=a. it does this
+#by going through assign and using assigns valuesn as variables for update and 
+#using updates return value as variable for assign. this does it m ammount of times
+#and then returns a,c,v.
+def iterate(k,m,x,y):
     v=select(k)
     for i in range(0,m):
-        a=assign(k,v)
-        b=update(k,a)
+        a,c=assign(k,v,x,y)
+        b=update(k,a,x,y)
         v=b
-    return a
-   
-plt.scatter(scale_x() , scale_y() , s=1, color=iterate(3,10))
-plt.xlabel('Blood Glucose Random')
-plt.ylabel('Hemoglobin')
-plt.title('Chronic Kidney Disease chart', fontdict=None, loc='center')
-plt.show ()
+    return a,c,v
+
+#this prints out k ammount of colors for the centroids and is necesary for it
+#to identify the centroids and their clusters
+def new_pt_color(k):
+    colorlist=[]
+    colors=["red","blue","green","orange","yellow","pink","purple","black","brown","silver"]
+    for i in range(0,k):
+        colorlist.append(colors[i])
+    return colorlist
+
+#produces the sensitivity of the graph by attaining the ammount of true positives 
+#and then attaining the ammount of all actaul positives and dividing the two
+#the last if statement is because sometimes the data does not add up and 1's are 
+#actually supposed to be zeros 
+def sensitivity(I,C):
+    k=0
+    l=0
+    for i in range(0,158):
+        j=I[i]
+        c=C[i]
+        if j==1:
+            if j==c:
+                k+=1
+    for i in range(0,158):
+        j=C[i]
+        if j==1:
+            l+=1
+    if k/l < .9:
+        s=1-(k/l)
+    else:
+        s=(k/l)
+    return s
+
+#produces the specificity of the graph by attaining the ammount of true negatives 
+#and then attaining the ammount of all actaul negatives and dividing the two
+#the last if statement is because sometimes the data does not add up and 1's are 
+#actually supposed to be zeros        
+def specificity(I,C):
+    k=0
+    l=0
+    for i in range(0,158):
+        j=I[i]
+        c=C[i]
+        if j==0:
+            if j==c:
+                k+=1
+    for i in range(0,158):
+        j=C[i]
+        if j==0:
+            l+=1
+    if k/l < .9:
+        s=1-(k/l)
+    else:
+        s=(k/l)
+    return s
