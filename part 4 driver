@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Apr  8 15:16:10 2020
+
+@author: Joshuabalbi
+"""
+#import statements
+from part_4_project_2_functions import *
+import pandas as pd
+import matplotlib.pyplot as plt
+
+#variables needed
+daf=pd.read_csv("/Users/Joshuabalbi/Downloads/project-2-JoshuaBalbi-master/ckd.csv")
+x=daf['Blood Glucose Random'].values.tolist()
+y=daf['Hemoglobin'].values.tolist()
+p=daf['Class'].values.tolist()
+k=2
+m=10
+index,color,point=iterate(k,m,x,y)
+sp=(sensitivity(index,p))
+sn=(specificity(index,p))
+
+#functioning code
+
+#graphng k amount of clusters
+plt.scatter(scale(x) , scale(y) , s=1,color=color)
+plt.scatter(point[0::2] ,point[1::2] , s=100, color=new_pt_color(k))
+plt.xlabel('Blood Glucose Random')
+plt.ylabel('Hemoglobin')
+plt.title('Chronic Kidney Disease chart', fontdict=None, loc='center')
+plt.show ()
+
+#showing the percentages 
+print((sp*100),"%", "is the sensitivity")
+print((sn*100),"%", "is the specificity")
+print((100-(sp*100)),"%", "is the False Positives Rate")
+print((100-(sn*100)),"%", "is the False Negatives Rate")
