@@ -1,0 +1,116 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Apr  2 14:39:54 2020
+
+@author: Joshuabalbi
+"""
+#import statements
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from random import random
+#-----------------------
+#function definitions
+
+#scale(l) scales any list to a 0-1 scale with parameters a specific 
+#list with 158 elements. the list is used for many other functions ahead
+def scale(l):
+    l_scaled=[]
+    mi=min(l)
+    ma=max(l)
+    for i in range(0,158):
+        w= ((l[i]-mi)/(ma-mi))
+        l_scaled.append(w)
+    return l_scaled
+
+#color depends on the class whihc is a list of 1 and 0s
+#reutrns a new list that replaces 0 with red and 1 with blue
+def color(Class):
+    color_list=[]
+    for i in range(0,158):
+        if Class[i]==1:
+            color='blue'
+            color_list.append(color)
+        else:
+            color= 'red'
+            color_list.append(color)
+    return color_list
+
+#testcase takes no parameters and just returns two different random integers
+#from 0-1
+def testcase():
+    rndm=[]
+    new_Blood_Glucose=random()
+    x1=new_Blood_Glucose
+    rndm.append(x1)
+    new_Hemoglobin=random()
+    y1=new_Hemoglobin
+    rndm.append(y1)
+    return rndm
+
+#distance array takes the distance between a random point newpoint and x list 
+#and y list. it returns a list l with all the distances
+def DistanceArray(newpoint,x,y):
+    l=[]
+    for i in range(0,158):
+       z=np.sqrt((newpoint[0]-scale(x)[i])**2+(newpoint[1]-scale(y)[i])**2)
+       l.append(z) 
+    return(l)
+
+#this function  uses the ditance array function to find to find the minimum
+#distnace of the function, then find its index and use that index with the list
+#p which is class and returns a 0 or 1
+def nearestneighborclassifier(newpoint,x,y):
+    nearest=min(DistanceArray(newpoint,x,y))
+    k=DistanceArray(newpoint,x,y).index(nearest)
+    return p[k]
+
+#newcolor has three parameters newpoint whihc is a list of 2 numbers and x and y
+#which are lists that get converted with scale. it uses the parameters and the
+#function nearestneighborclassifier to find whether it is 0 or 1 and with that 
+#information returns red if class=0 or blue if class=1.
+def newcolor(newpoint,x,y):
+    newclass=nearestneighborclassifier(newpoint,x,y)
+    color_list=[]
+    if newclass==1:
+        color='blue'
+        color_list.append(color)
+    else:
+        color= 'red'
+        color_list.append(color)
+    return color_list    
+
+#the graphtescase function has three parameters. a list of two points called 
+#newpoints a list of x and a list of y. it scales x and y and graphs them.
+#it uses the function color to determine the color of the point. then new point
+#is also graphed and made clear with size 100 and color is made clear with 
+#the function newcolor.
+def graphtestcase(newpoint,x,y):
+    plt.scatter(scale(x) , scale(y) , s=1, color=color(p))
+    plt.scatter(newpoint[0],newpoint[1],s=100, color=newcolor(newpoint,x,y))
+    plt.xlabel('Blood Glucose Random')
+    plt.ylabel('Hemoglobin')
+    plt.title('Chronic Kidney Disease chart w/ test point', fontdict=None, loc='center')
+#---------------------------------------------------------------------------   
+#functioning Code
+    
+#variables needed    
+daf=pd.read_csv("/Users/Joshuabalbi/Downloads/project-2-JoshuaBalbi-master/ckd.csv")   
+x=daf['Blood Glucose Random'].values.tolist()
+y=daf['Hemoglobin'].values.tolist()
+p=daf['Class'].values.tolist()
+newpoint=testcase()
+
+#functioning code
+
+#this graph just graphs the opriginal set of data and their classifications
+plt.scatter(scale(x) , scale(y) , s=1, color=color(p))
+plt.xlabel('Blood Glucose Random')
+plt.ylabel('Hemoglobin')
+plt.title('Chronic Kidney Disease chart', fontdict=None, loc='center')
+plt.show ()
+  
+#this prints a graph with a new point and the color of the point depending on
+#its nearest neighbor   
+print(graphtestcase(newpoint,x,y))
