@@ -27,6 +27,7 @@ PART 2 functions:
 	nearestneighborclassifier(newpoint,x,y): this function  uses the ditance array function to find to find the minimum distnace of the function, then find its index and use that index with the list p which is class and returns a 0 or 1
 	
 	newcolor(newpoint,x,y):has three parameters newpoint whihc is a list of 2 numbers and x and y which are lists that get converted with scale. it uses the parameters and the function nearestneighborclassifier to find whether it is 0 or 1 and with that information returns red if class=0 or blue if class=1.
+
 	graphtestcase(newpoint,x,y): has three parameters. a list of two points called newpoints a list of x and a list of y. it scales x and y and graphs them. it uses the function color to determine the color of the point. then new point is also graphed and made clear with size 100 and color is made clear with the function newcolor.
 	
 PART 3 functions:
