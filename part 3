@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Apr  2 21:10:48 2020
+
+@author: Joshuabalbi
+"""
+#Import statements
+import numpy as np
+import pandas as pd
+#----------------------------
+#Function definitions
+
+#scale(l) scales any list to a 0-1 scale with parameters a specific 
+#list with 158 elements. the list is used for many other functions ahead
+def scale(l):
+    l_scaled=[]
+    mi=min(l)
+    ma=max(l)
+    for i in range(0,158):
+        w= ((l[i]-mi)/(ma-mi))
+        l_scaled.append(w)
+    return l_scaled
+
+#distance array takes the distance between a random point x1 and y1 and x list 
+#and y list. it returns a list l with all the distances
+def DistanceArray(x1,y1,x,y):
+    l=[]
+    for i in range(0,158):
+       z=np.sqrt((x1-scale(x)[i])**2+(y1-scale(y)[i])**2)
+       l.append(z) 
+    return(l)
+
+#this function takes in 5 parameters k= how many neighbors x1 and y1 are 
+#Random point assigned by the user and x and y are lists used and scaled.
+#it gets all the distances the previously named distance array and after 
+#it sorts them with their indices and gets the first k ammount of indices 
+#then with arithmetics it figures out if there are more 1 values or 0 values
+def kNearestNeighborClassifier(k,x1,y1,x,y):
+    l = DistanceArray(x1,y1,x,y)
+    sorted_indices = np.argsort(l)
+    k_indices = sorted_indices[:k]
+    g=0
+    for i in range(0,k):
+        g+=p[k_indices[i]]      
+    if g>(k/2):
+        return 1
+    else:
+        return 0
+#--------------------------------------------------------------------------------
+#Functioning Code
+        
+#variables needed
+daf=pd.read_csv("/Users/Joshuabalbi/Downloads/project-2-JoshuaBalbi-master/ckd.csv")
+x=daf['Blood Glucose Random'].values.tolist()
+y=daf['Hemoglobin'].values.tolist()
+p=daf['Class'].values.tolist()
+
+#functioning code
+#prints a 1 or 0 depending on the position of a point and the k shortest distances
+print(kNearestNeighborClassifier(3,.2,.8,x,y))
