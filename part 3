@@ -24,20 +24,20 @@ def scale(l):
 
 #distance array takes the distance between a random point x1 and y1 and x list 
 #and y list. it returns a list l with all the distances
-def DistanceArray(x1,y1,x,y):
+def DistanceArray(newpoint,x,y):
     l=[]
     for i in range(0,158):
-       z=np.sqrt((x1-scale(x)[i])**2+(y1-scale(y)[i])**2)
+       z=np.sqrt((newpoint[0]-scale(x)[i])**2+(newpoint[1]-scale(y)[i])**2)
        l.append(z) 
     return(l)
 
-#this function takes in 5 parameters k= how many neighbors x1 and y1 are 
-#Random point assigned by the user and x and y are lists used and scaled.
-#it gets all the distances the previously named distance array and after 
+#this function takes in 5 parameters k= how many neighbors newpoints are 
+#a list of 2 Random point assigned by the user and x and y are lists used and 
+#scaled. it gets all the distances the previously named distance array and after 
 #it sorts them with their indices and gets the first k ammount of indices 
 #then with arithmetics it figures out if there are more 1 values or 0 values
-def kNearestNeighborClassifier(k,x1,y1,x,y):
-    l = DistanceArray(x1,y1,x,y)
+def kNearestNeighborClassifier(k,newpoint,x,y):
+    l = DistanceArray(newpoint,x,y)
     sorted_indices = np.argsort(l)
     k_indices = sorted_indices[:k]
     g=0
@@ -55,7 +55,8 @@ daf=pd.read_csv("/Users/Joshuabalbi/Downloads/project-2-JoshuaBalbi-master/ckd.c
 x=daf['Blood Glucose Random'].values.tolist()
 y=daf['Hemoglobin'].values.tolist()
 p=daf['Class'].values.tolist()
-
+k=3
+newpoint=[.2,.3]
 #functioning code
 #prints a 1 or 0 depending on the position of a point and the k shortest distances
-print(kNearestNeighborClassifier(3,.2,.8,x,y))
+print(kNearestNeighborClassifier(k,newpoint,x,y))
