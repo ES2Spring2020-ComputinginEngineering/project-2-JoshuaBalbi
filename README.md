@@ -33,6 +33,8 @@ PART 2 functions:
 PART 3 functions:
 
 	scale(l): scales any list to a 0-1 scale with parameters a specific list with 158 elements. the list is used for many other functions ahead
+	
+	testcase(): takes no parameters and just returns two different random integers from 0-1
 
 	DistanceArray(newpoint,x,y):takes the distance between a random point newpoint and x list and y list. it returns a list l with all the distances
 
